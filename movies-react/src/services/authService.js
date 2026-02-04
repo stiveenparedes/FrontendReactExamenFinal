@@ -1,18 +1,24 @@
-import axios from "axios";
-
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "http://localhost:8000/api";
 
 export async function login(username, password) {
-  const response = await axios.post(`${API_URL}/o/token/`, {
-    username,
-    password,
-    grant_type: "password",
-    client_id: "TU_CLIENT_ID",
-    client_secret: "TU_CLIENT_SECRET",
+  const response = await fetch(`${API_URL}/token/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username,
+      password,
+    }),
   });
-  return response.data;
+
+  if (!response.ok) {
+    throw new Error("Error en login");
+  }
+
+  return await response.json();
 }
 
-export function logout() {
+export async function logout() {
   localStorage.removeItem("access_token");
 }

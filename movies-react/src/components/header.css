@@ -1,0 +1,20 @@
+.movie-navbar {
+  margin-bottom: 20px;
+}
+
+.movie-navbar img {
+  transition: transform 0.2s ease-in-out;
+}
+
+.movie-navbar img:hover {
+  transform: scale(1.05);
+}
+
+.movie-navbar a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.movie-navbar .MuiButton-root {
+  margin-left: 8px;
+}

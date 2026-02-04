@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API_URL = "http://127.0.0.1:8000/api/movies/";
 
-function authHeader() {
+function authheader() {
   const token = localStorage.getItem("access_token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
@@ -21,7 +21,7 @@ export async function addMovie(data) {
   Object.keys(data).forEach((k) => formData.append(k, data[k]));
 
   return axios.post(API_URL, formData, {
-    headers: { ...authHeader() },
+    headers: { ...authheader() },
   });
 }
 
@@ -30,12 +30,12 @@ export async function updateMovie(id, data) {
   Object.keys(data).forEach((k) => formData.append(k, data[k]));
 
   return axios.put(`${API_URL}${id}/`, formData, {
-    headers: { ...authHeader() },
+    headers: { ...authheader() },
   });
 }
 
 export async function deleteMovie(id) {
   return axios.delete(`${API_URL}${id}/`, {
-    headers: { ...authHeader() },
+    headers: { ...authheader() },
   });
 }
