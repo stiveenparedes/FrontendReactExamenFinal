@@ -17,7 +17,11 @@ export async function getMovieById(id) {
 
 export async function addMovie(data) {
   const formData = new FormData();
-  Object.keys(data).forEach((k) => formData.append(k, data[k]));
+  Object.keys(data).forEach((key) => {
+    if (data[key] !== null) {
+      formData.append(key, data[key]);
+    }
+  });
 
   return axios.post(API_URL, formData, {
     headers: authHeader(),
@@ -26,7 +30,11 @@ export async function addMovie(data) {
 
 export async function updateMovie(id, data) {
   const formData = new FormData();
-  Object.keys(data).forEach((k) => formData.append(k, data[k]));
+  Object.keys(data).forEach((key) => {
+    if (data[key] !== null) {
+      formData.append(key, data[key]);
+    }
+  });
 
   return axios.put(`${API_URL}${id}/`, formData, {
     headers: authHeader(),
