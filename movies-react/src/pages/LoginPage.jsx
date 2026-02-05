@@ -23,21 +23,22 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const responseData = await login(loginData.username, loginData.password);
-      localStorage.setItem("access_token", responseData.access);
+      const responseData = await login(
+        loginData.username,
+        loginData.password
+      );
+
+      localStorage.setItem("access_token", responseData.access_token);
       alert("Inicio de sesión exitoso");
-      navigate("/"); 
+      navigate("/");
     } catch (error) {
-      console.error("Error al iniciar sesión:", error);
       alert("Usuario o contraseña incorrectos");
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) {
-    return <Spinner />;
-  }
+  if (loading) return <Spinner />;
 
   return (
     <Box
@@ -52,14 +53,13 @@ export default function LoginPage() {
         mt: 8,
       }}
     >
-      <Typography variant="h5" gutterBottom textAlign="center">
+      <Typography variant="h5" textAlign="center">
         🎬 Login Movies
       </Typography>
 
       <TextField
         label="Usuario"
         name="username"
-        variant="outlined"
         value={loginData.username}
         onChange={handleChange}
         required
@@ -71,11 +71,10 @@ export default function LoginPage() {
         type="password"
         value={loginData.password}
         onChange={handleChange}
-        variant="outlined"
         required
       />
 
-      <Button variant="contained" color="primary" type="submit" disabled={loading}>
+      <Button variant="contained" type="submit">
         Iniciar Sesión
       </Button>
     </Box>

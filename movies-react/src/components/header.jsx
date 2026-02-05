@@ -1,27 +1,16 @@
 import { AppBar, Button, Toolbar, Typography, Box } from "@mui/material";
 import "./Header.css";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import Spinner from "./Spinner";
-import { logout } from "../services/authService";
 
 export default function Header() {
   const isLoggedIn = localStorage.getItem("access_token") !== null;
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
 
-  const handleLogout = async () => {
-    setLoading(true);
-    try {
-      await logout();
-      localStorage.removeItem("access_token");
-      navigate("/login");
-    } finally {
-      setLoading(false);
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    navigate("/login");
   };
-
-  if (loading) return <Spinner />;
 
   return (
     <header className="movie-navbar">
@@ -31,7 +20,6 @@ export default function Header() {
             sx={{ display: "flex", alignItems: "center", gap: 2, cursor: "pointer" }}
             onClick={() => navigate("/")}
           >
-            
             <img src="/logo.png" alt="Movie Logo" height={60} />
             <Typography variant="h6">Movie App</Typography>
           </Box>
