@@ -1,76 +1,54 @@
 import { AppBar, Button, Toolbar, Typography, Box } from "@mui/material";
 import "./Header.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Header() {
   const isLoggedIn = localStorage.getItem("access_token") !== null;
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("access_token");
+    localStorage.clear();
     navigate("/login");
   };
 
   return (
     <header className="movie-navbar">
       <AppBar position="static">
-        {/* ===== IMAGEN SUPERIOR CENTRADA ===== */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            py: 2,
-            backgroundColor: "#1976d2",
-          }}
-        >
-          <img
-            src="/pelis.jpg"
-            alt="Películas"
-            style={{
-              maxHeight: "120px",
-              objectFit: "contain",
-            }}
-          />
-        </Box>
-
-        {/* ===== NAVBAR ===== */}
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-              cursor: "pointer",
-            }}
+            sx={{ display: "flex", alignItems: "center", gap: 2, cursor: "pointer" }}
             onClick={() => navigate("/")}
           >
             <img src="/logo.png" alt="Movie Logo" height={50} />
             <Typography variant="h6">Movie App</Typography>
           </Box>
 
-          <Box>
-            <Button color="inherit" onClick={() => navigate("/")}>
-              Inicio
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Button color="inherit" component={Link} to="/">
+              🎬 Películas
+            </Button>
+
+            <Button color="inherit" component={Link} to="/directors">
+              🎥 Directores
             </Button>
 
             {isLoggedIn && (
               <>
-                <Button color="inherit" onClick={() => navigate("/add-movie")}>
-                  Agregar Película
+                <Button color="inherit" component={Link} to="/directors/add">
+                  ➕ Director
                 </Button>
-                <Button color="inherit" onClick={() => navigate("/directors")}>
-                  Directores
+                <Button color="inherit" component={Link} to="/movies/add">
+                  ➕ Película
                 </Button>
                 <Button color="inherit" onClick={handleLogout}>
-                  Cerrar Sesión
+                  Salir
                 </Button>
               </>
             )}
 
             {!isLoggedIn && (
-              <Button color="inherit" onClick={() => navigate("/login")}>
-                Iniciar Sesión
+              <Button color="inherit" component={Link} to="/login">
+                Login
               </Button>
             )}
           </Box>

@@ -31,7 +31,6 @@ export default function LoginPage() {
         loginData.password
       );
 
-      // 🔐 GUARDAR TOKENS OAUTH2
       localStorage.setItem("access_token", responseData.access_token);
       localStorage.setItem("refresh_token", responseData.refresh_token);
 

@@ -8,9 +8,7 @@ const api = axios.create({
   },
 });
 
-/* =========================
-   REQUEST → ACCESS TOKEN
-========================= */
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("access_token");
 
@@ -21,9 +19,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-/* =========================
-   RESPONSE → REFRESH TOKEN
-========================= */
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -43,7 +39,6 @@ api.interceptors.response.use(
 
         return api(originalRequest);
       } catch (err) {
-        // Refresh falló → logout forzado
         localStorage.clear();
         window.location.href = "/login";
         return Promise.reject(err);

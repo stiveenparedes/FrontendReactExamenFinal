@@ -20,7 +20,6 @@ export default function DirectorCard({ director, isLoggedIn, onDelete }) {
 
   let imageUrl = "";
   if (director.picture) {
-    // EXACTAMENTE igual que movies
     imageUrl = director.picture.startsWith("http")
       ? director.picture
       : `${mediaUrl}/${director.picture.replace("media/", "")}`;

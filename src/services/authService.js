@@ -4,9 +4,7 @@ const CLIENT_ID = "QdpJ54zVpbO7VIfODoohrxo7WbC26v3Z6QpX6Wx6";
 const CLIENT_SECRET =
   "48x3Py6BxWAFnsVbTKxZ5J2SgDshgpxKFhiYzWMxvDrk9XYlfbtpptsWMY7hhft57zj282tEBAWWY7Y8vcHZ7L6jS4Sg4J25dBaoD3kaH4zJMCwgCVoWFjlZUjaxgRzX";
 
-/* =========================
-   LOGIN (PASSWORD GRANT)
-========================= */
+
 export async function login(username, password) {
   const response = await fetch(`${API_URL}/token/`, {
     method: "POST",
@@ -28,16 +26,14 @@ export async function login(username, password) {
 
   const data = await response.json();
 
-  // 🔐 GUARDAR TOKENS
+ 
   localStorage.setItem("access_token", data.access_token);
   localStorage.setItem("refresh_token", data.refresh_token);
 
   return data;
 }
 
-/* =========================
-   REFRESH TOKEN
-========================= */
+
 export async function refreshAccessToken() {
   const refreshToken = localStorage.getItem("refresh_token");
 
@@ -69,9 +65,7 @@ export async function refreshAccessToken() {
   return data.access_token;
 }
 
-/* =========================
-   LOGOUT
-========================= */
+
 export function logout() {
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");

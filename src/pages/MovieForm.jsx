@@ -17,11 +17,10 @@ import {
   updateMovie
 } from "../services/movieService";
 
+import { fetchDirectors } from "../services/directorService";
 import Spinner from "../components/Spinner";
 
-/* =========================
-   Convierte File -> BASE64
-========================= */
+
 const fileToBase64 = (file) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -39,13 +38,17 @@ export default function MovieForm() {
     genre: "",
     release_year: "",
     rating: "",
-    poster: null
+    poster: null,
+    director: ""
   });
 
+  const [directors, setDirectors] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    fetchDirectors().then(setDirectors);
+
     if (id) {
       setLoading(true);
       getMovieById(id)
@@ -55,7 +58,8 @@ export default function MovieForm() {
             genre: res.data.genre,
             release_year: res.data.release_year,
             rating: res.data.rating,
-            poster: res.data.poster // puede venir null o url
+            poster: res.data.poster,
+            director: res.data.director || ""
           });
         })
         .finally(() => setLoading(false));
@@ -87,7 +91,6 @@ export default function MovieForm() {
       }
       navigate("/");
     } catch (error) {
-      console.error("Error Django:", error.response?.data);
       alert(JSON.stringify(error.response?.data, null, 2));
     } finally {
       setSaving(false);
@@ -131,6 +134,32 @@ export default function MovieForm() {
           </Select>
         </FormControl>
 
+        
+        <FormControl>
+          <InputLabel>Director</InputLabel>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1 }}>
+            <Select
+              name="director"
+              value={movieData.director}
+              onChange={handleChange}
+              sx={{ flex: 1 }}
+            >
+              {directors.map((d) => (
+                <MenuItem key={d.id} value={d.id}>
+                  {d.first_name} {d.last_name}
+                </MenuItem>
+              ))}
+            </Select>
+            <Button
+              variant="outlined"
+              onClick={() => navigate("/directors/add")} 
+              sx={{ whiteSpace: "nowrap" }}
+            >
+              + Director
+            </Button>
+          </Box>
+        </FormControl>
+
         <TextField
           label="Año de estreno"
           name="release_year"
@@ -139,12 +168,10 @@ export default function MovieForm() {
           onChange={handleChange}
           required
         />
-
         <TextField
           label="Rating"
           name="rating"
           type="number"
-          inputProps={{ step: 0.1, min: 0, max: 9.9 }}
           value={movieData.rating}
           onChange={handleChange}
           required
