@@ -1,4 +1,13 @@
-import { Box, Typography, TextField, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -9,6 +18,17 @@ import {
 } from "../services/movieService";
 
 import Spinner from "../components/Spinner";
+
+/* =========================
+   Convierte File -> BASE64
+========================= */
+const fileToBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
 
 export default function MovieForm() {
   const { id } = useParams();
@@ -35,20 +55,19 @@ export default function MovieForm() {
             genre: res.data.genre,
             release_year: res.data.release_year,
             rating: res.data.rating,
-            poster: res.data.poster
+            poster: res.data.poster // puede venir null o url
           });
         })
-        .finally(() => {
-          setLoading(false);
-        });
+        .finally(() => setLoading(false));
     }
   }, [id]);
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     const { name, value, files } = e.target;
 
-    if (name === "poster") {
-      setMovieData({ ...movieData, poster: files[0] });
+    if (name === "poster" && files && files[0]) {
+      const base64 = await fileToBase64(files[0]);
+      setMovieData({ ...movieData, poster: base64 });
     } else {
       setMovieData({ ...movieData, [name]: value });
     }
@@ -66,19 +85,16 @@ export default function MovieForm() {
         await addMovie(movieData);
         alert("Película agregada correctamente");
       }
-
       navigate("/");
     } catch (error) {
-      console.error("Error guardando película:", error);
-      alert("Error al guardar la película");
+      console.error("Error Django:", error.response?.data);
+      alert(JSON.stringify(error.response?.data, null, 2));
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading || saving) {
-    return <Spinner />;
-  }
+  if (loading || saving) return <Spinner />;
 
   return (
     <Box sx={{ maxWidth: 400, margin: "auto", mt: 4 }}>
@@ -89,11 +105,7 @@ export default function MovieForm() {
       <Box
         component="form"
         onSubmit={handleSubmit}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 2
-        }}
+        sx={{ display: "flex", flexDirection: "column", gap: 2 }}
       >
         <TextField
           label="Título"
@@ -103,17 +115,26 @@ export default function MovieForm() {
           required
         />
 
-        <TextField
-          label="Género"
-          name="genre"
-          value={movieData.genre}
-          onChange={handleChange}
-          required
-        />
+        <FormControl required>
+          <InputLabel>Género</InputLabel>
+          <Select
+            name="genre"
+            value={movieData.genre}
+            label="Género"
+            onChange={handleChange}
+          >
+            <MenuItem value="Acción">🎬 Acción</MenuItem>
+            <MenuItem value="Drama">🎭 Drama</MenuItem>
+            <MenuItem value="Comedia">😂 Comedia</MenuItem>
+            <MenuItem value="Terror">😱 Terror</MenuItem>
+            <MenuItem value="Ciencia Ficción">🚀 Ciencia Ficción</MenuItem>
+          </Select>
+        </FormControl>
 
         <TextField
           label="Año de estreno"
           name="release_year"
+          type="number"
           value={movieData.release_year}
           onChange={handleChange}
           required
@@ -122,6 +143,8 @@ export default function MovieForm() {
         <TextField
           label="Rating"
           name="rating"
+          type="number"
+          inputProps={{ step: 0.1, min: 0, max: 9.9 }}
           value={movieData.rating}
           onChange={handleChange}
           required
@@ -134,11 +157,7 @@ export default function MovieForm() {
           accept="image/*"
         />
 
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={saving}
-        >
+        <Button variant="contained" type="submit">
           Guardar
         </Button>
       </Box>

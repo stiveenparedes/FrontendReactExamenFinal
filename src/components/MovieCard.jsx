@@ -1,4 +1,4 @@
-import {Card,CardActions,CardContent,CardMedia,Typography,IconButton,} from "@mui/material";
+import { Card, CardActions, CardContent, CardMedia, Typography, IconButton, } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -15,7 +15,7 @@ export default function MovieCard({ movie, isLoggedIn, onDelete }) {
     let imageUrl = "";
     if (movie.poster) {
         if (movie.poster.startsWith("http")) {
-            imageUrl = movie.poster; 
+            imageUrl = movie.poster;
         } else if (movie.poster.startsWith("/")) {
             imageUrl = `http://127.0.0.1:8000${movie.poster}`;
         } else {
@@ -65,7 +65,7 @@ export default function MovieCard({ movie, isLoggedIn, onDelete }) {
                 {isLoggedIn && (
                     <>
                         <IconButton
-                            onClick={() => navigate(`/edit-movie/${movie.id}`)}
+                            onClick={() => navigate(`/movies/edit/${movie.id}`)}
                             sx={{
                                 backgroundColor: "#2e7d32",
                                 color: "white",

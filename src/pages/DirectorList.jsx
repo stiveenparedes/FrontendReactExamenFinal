@@ -1,68 +1,47 @@
-import { Box, Typography, TextField, Button } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { addMovie, getMovieById, updateMovie } from "../services/movieService";
+import { Grid, Typography } from "@mui/material";
+
+import { fetchDirectors, deleteDirector } from "../services/directorService";
 import Spinner from "../components/Spinner";
+import DirectorCard from "../pages/DirectorCard";
 
-export default function MovieForm() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+export default function DirectorList() {
+  const [directors, setDirectors] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [movieData, setMovieData] = useState({
-    title: "",
-    genre: "",
-    release_year: "",
-    rating: "",
-    poster: null,
-  });
+  const isLoggedIn = localStorage.getItem("access_token") !== null;
 
   useEffect(() => {
-    if (id) {
-      setLoading(true);
-      getMovieById(id).then((res) => {
-        setMovieData(res.data);
-        setLoading(false);
-      });
-    }
-  }, [id]);
+    fetchDirectors()
+      .then((data) => setDirectors(data))
+      .catch((err) => console.error("Error cargando directores:", err))
+      .finally(() => setLoading(false));
+  }, []);
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "poster") {
-      setMovieData({ ...movieData, poster: files[0] });
-    } else {
-      setMovieData({ ...movieData, [name]: value });
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    if (id) await updateMovie(id, movieData);
-    else await addMovie(movieData);
-
-    setLoading(false);
-    navigate("/");
+  const handleDelete = async (id) => {
+    await deleteDirector(id);
+    setDirectors((prev) => prev.filter((d) => d.id !== id));
   };
 
   if (loading) return <Spinner />;
 
   return (
-    <Box sx={{ maxWidth: 400, margin: "auto", mt: 4 }}>
-      <Typography variant="h5">{id ? "Editar" : "Agregar"} Película</Typography>
+    <>
+      <Typography variant="h4" sx={{ mb: 2 }}>
+        🎬 Directores
+      </Typography>
 
-      <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <TextField label="Título" name="title" value={movieData.title} onChange={handleChange} required />
-        <TextField label="Género" name="genre" value={movieData.genre} onChange={handleChange} required />
-        <TextField label="Año" name="release_year" value={movieData.release_year} onChange={handleChange} required />
-        <TextField label="Rating" name="rating" value={movieData.rating} onChange={handleChange} required />
-
-        <input type="file" name="poster" onChange={handleChange} />
-
-        <Button variant="contained" type="submit">Guardar</Button>
-      </Box>
-    </Box>
+      <Grid container spacing={2}>
+        {directors.map((director) => (
+          <Grid item xs={12} sm={6} md={4} key={director.id}>
+            <DirectorCard
+              director={director}
+              isLoggedIn={isLoggedIn}
+              onDelete={handleDelete}
+            />
+          </Grid>
+        ))}
+      </Grid>
+    </>
   );
 }

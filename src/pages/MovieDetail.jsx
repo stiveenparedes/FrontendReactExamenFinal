@@ -1,34 +1,46 @@
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Box, Typography, Button, Card, CardContent } from "@mui/material";
+import { Typography, Card, CardMedia, CardContent } from "@mui/material";
 import { getMovieById } from "../services/movieService";
-import Spinner from "../components/Spinner";
 
 export default function MovieDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [movie, setMovie] = useState(null);
 
+  const mediaUrl = import.meta.env.VITE_MEDIA_BASE_URL;
+
   useEffect(() => {
-    getMovieById(id).then((res) => setMovie(res.data));
+    getMovieById(id)
+      .then((res) => setMovie(res.data))
+      .catch((err) => console.error(err));
   }, [id]);
 
-  if (!movie) return <Spinner />;
+  if (!movie) return <Typography>Cargando...</Typography>;
+
+  let imageUrl = "";
+  if (movie.poster) {
+    imageUrl = movie.poster.startsWith("http")
+      ? movie.poster
+      : `${mediaUrl}/${movie.poster.replace("media/", "")}`;
+  }
 
   return (
-    <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-      <Card sx={{ width: 400 }}>
-        <CardContent>
-          <Typography variant="h5">{movie.title}</Typography>
-          <Typography>Género: {movie.genre}</Typography>
-          <Typography>Año: {movie.release_year}</Typography>
-          <Typography>Rating: {movie.rating}</Typography>
+    <Card sx={{ maxWidth: 600, margin: "auto" }}>
+      {imageUrl && (
+        <CardMedia
+          component="img"
+          height="400"
+          image={imageUrl}
+          alt={movie.title}
+        />
+      )}
 
-          <Button sx={{ mt: 2 }} variant="contained" onClick={() => navigate(-1)}>
-            Regresar
-          </Button>
-        </CardContent>
-      </Card>
-    </Box>
+      <CardContent>
+        <Typography variant="h4">{movie.title}</Typography>
+        <Typography>🎬 Género: {movie.genre}</Typography>
+        <Typography>📅 Año: {movie.release_year}</Typography>
+        <Typography>⭐ Rating: {movie.rating}</Typography>
+      </CardContent>
+    </Card>
   );
 }

@@ -1,48 +1,21 @@
-import axios from "axios";
+import api from "./api";
 
-const API_URL = "http://127.0.0.1:8000/api/movies/";
+export const fetchMovies = () => {
+  return api.get("/api/movies/");
+};
 
-function authHeader() {
-  const token = localStorage.getItem("access_token");
-  return token ? { Authorization: `Token ${token}` } : {};
-}
+export const getMovieById = (id) => {
+  return api.get(`/api/movies/${id}/`);
+};
 
-export async function fetchMovies() {
-  return axios.get(API_URL, { headers: authHeader() });
-}
+export const addMovie = (data) => {
+  return api.post("/api/movies/", data);
+};
 
-export async function getMovieById(id) {
-  return axios.get(`${API_URL}${id}/`, { headers: authHeader() });
-}
+export const updateMovie = (id, data) => {
+  return api.put(`/api/movies/${id}/`, data);
+};
 
-export async function addMovie(data) {
-  const formData = new FormData();
-  Object.keys(data).forEach((key) => {
-    if (data[key] !== null) {
-      formData.append(key, data[key]);
-    }
-  });
-
-  return axios.post(API_URL, formData, {
-    headers: authHeader(),
-  });
-}
-
-export async function updateMovie(id, data) {
-  const formData = new FormData();
-  Object.keys(data).forEach((key) => {
-    if (data[key] !== null) {
-      formData.append(key, data[key]);
-    }
-  });
-
-  return axios.put(`${API_URL}${id}/`, formData, {
-    headers: authHeader(),
-  });
-}
-
-export async function deleteMovie(id) {
-  return axios.delete(`${API_URL}${id}/`, {
-    headers: authHeader(),
-  });
-}
+export const deleteMovie = (id) => {
+  return api.delete(`/api/movies/${id}/`);
+};

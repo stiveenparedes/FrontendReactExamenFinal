@@ -1,16 +1,31 @@
-import axios from "axios";
+import api from "./api";
 
-const API_URL = "http://127.0.0.1:8000/api/directors/";
+// LISTAR directores
+export const fetchDirectors = async () => {
+  const response = await api.get("/api/directors/");
+  return response.data;
+};
 
-function authHeader() {
-  const token = localStorage.getItem("access_token");
-  return token ? { Authorization: `Token ${token}` } : {};
-}
+// OBTENER un director
+export const fetchDirectorById = async (id) => {
+  const response = await api.get(`/api/directors/${id}/`);
+  return response.data;
+};
 
-export async function fetchDirectors() {
-  return axios.get(API_URL, { headers: authHeader() });
-}
+// CREAR director
+export const addDirector = async (data) => {
+  const response = await api.post("/api/directors/", data);
+  return response.data;
+};
 
-export async function getDirectorById(id) {
-  return axios.get(`${API_URL}${id}/`, { headers: authHeader() });
-}
+// ACTUALIZAR director
+export const updateDirector = async (id, data) => {
+  const response = await api.put(`/api/directors/${id}/`, data);
+  return response.data;
+};
+
+// ELIMINAR director
+export const deleteDirector = async (id) => {
+  const response = await api.delete(`/api/directors/${id}/`);
+  return response.data;
+};

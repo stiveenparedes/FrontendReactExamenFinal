@@ -1,79 +1,103 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { AppBar, Toolbar, Button, Box } from "@mui/material";
 import MovieList from "./pages/MovieList";
-import MovieDetail from "./pages/MovieDetail";
 import MovieForm from "./pages/MovieForm";
+import MovieDetail from "./pages/MovieDetail";
+
+import Header from "./components/header";
 import DirectorList from "./pages/DirectorList";
 import DirectorDetail from "./pages/DirectorDetail";
-import LoginPage from "./pages/LoginPage";
-import Header from "./components/header";   
+import DirectorForm from "./pages/DirectorForm";
 
-function PrivateRoute({ children }) {
-  const token = localStorage.getItem("access_token");
-  return token ? children : <Navigate to="/login" />;
-}
+import LoginPage from "./pages/LoginPage";
 
 export default function App() {
+  const isLoggedIn = !!localStorage.getItem("access_token");
+
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href = "/login";
+  };
+
   return (
-    <BrowserRouter>
-      <Header />
+    <Router>
+      {/* ===== NAVBAR ===== */}
+      <AppBar position="static">
+        <Toolbar sx={{ gap: 2 }}>
+          <Button color="inherit" component={Link} to="/">
+            🎬 Películas
+          </Button>
 
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
+          <Button color="inherit" component={Link} to="/directors">
+            🎥 Directores
+          </Button>
 
-        <Route
-          path="/"
-          element={
-            <PrivateRoute>
-              <MovieList />
-            </PrivateRoute>
-          }
-        />
+          {/* BOTÓN SOLO PARA DIRECTORES (LOGUEADO) */}
+          {isLoggedIn && (
+            <Button color="inherit" component={Link} to="/directors/add">
+              ➕ Director
+            </Button>
+          )}
 
-        <Route
-          path="/movies/:id"
-          element={
-            <PrivateRoute>
-              <MovieDetail />
-            </PrivateRoute>
-          }
-        />
+          {isLoggedIn && (
+            <Button color="inherit" component={Link} to="/movies/add">
+              ➕ Pelicula
+            </Button>
+          )}
 
-        <Route
-          path="/add-movie"
-          element={
-            <PrivateRoute>
-              <MovieForm />
-            </PrivateRoute>
-          }
-        />
+          <Box sx={{ flexGrow: 1 }} />
 
-        <Route
-          path="/edit-movie/:id"
-          element={
-            <PrivateRoute>
-              <MovieForm />
-            </PrivateRoute>
-          }
-        />
+          {isLoggedIn ? (
+            <Button color="inherit" onClick={handleLogout}>
+              Salir
+            </Button>
+          ) : (
+            <Button color="inherit" component={Link} to="/login">
+              Login
+            </Button>
+          )}
+        </Toolbar>
+      </AppBar>
 
-        <Route
-          path="/directors"
-          element={
-            <PrivateRoute>
-              <DirectorList />
-            </PrivateRoute>
-          }
-        />
+      {/* ===== ROUTES ===== */}
+      <Box sx={{ p: 3 }}>
+        <Routes>
+          {/* PUBLIC */}
+          <Route path="/" element={<MovieList />} />
+          <Route path="/movies/:id" element={<MovieDetail />} />
 
-        <Route
-          path="/directors/:id"
-          element={
-            <PrivateRoute>
-              <DirectorDetail />
-            </PrivateRoute>
-          }
-        />
-      </Routes>
-    </BrowserRouter>
+          <Route path="/directors" element={<DirectorList />} />
+          <Route path="/directors/:id" element={<DirectorDetail />} />
+
+          <Route path="/login" element={<LoginPage />} />
+
+          {/* PROTECTED (UI level) */}
+          {isLoggedIn && (
+            <>
+              {/* PELÍCULAS */}
+              <Route path="/movies/add" element={<MovieForm />} />
+              <Route path="/movies/edit/:id" element={<MovieForm />} />
+
+              {/* DIRECTORES */}
+              <Route path="/directors/add" element={<DirectorForm />} />
+              <Route
+                path="/edit-director/:id"
+                element={<DirectorForm />}
+              />
+            </>
+          )}
+
+          {/* FALLBACK */}
+          <Route
+            path="*"
+            element={
+              <h2 style={{ textAlign: "center" }}>
+                Página no encontrada
+              </h2>
+            }
+          />
+        </Routes>
+      </Box>
+    </Router>
   );
 }
